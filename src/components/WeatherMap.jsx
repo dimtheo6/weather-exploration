@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { MapContainer, Marker, TileLayer, Tooltip, useMap, useMapEvents, zoomControl } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  TileLayer,
+  Tooltip,
+  useMap,
+  useMapEvents,
+  ZoomControl,
+} from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -23,7 +31,9 @@ const pinIcon = new L.Icon({
 // HTML "pill" marker: weather icon + temperature, coloured by temperature.
 // iconSize: null lets the pill size itself; CSS centres it on the point.
 function createCityIcon(city, isSelected) {
-  const classes = ["city-marker", isSelected && "city-marker--selected"].filter(Boolean).join(" ");
+  const classes = ["city-marker", isSelected && "city-marker--selected"]
+    .filter(Boolean)
+    .join(" ");
 
   if (!city.weather) {
     return L.divIcon({
@@ -69,25 +79,39 @@ function FlyToSelection({ location }) {
 
   useEffect(() => {
     if (location?.flyTo) {
-      map.flyTo([location.lat, location.lon], Math.max(map.getZoom(), 8), { duration: 1.2 });
+      map.flyTo([location.lat, location.lon], Math.max(map.getZoom(), 8), {
+        duration: 1.2,
+      });
     }
   }, [location, map]);
 
   return null;
 }
 
-export default function WeatherMap({ cities, selectedLocation, onSelectLocation }) {
+export default function WeatherMap({
+  cities,
+  selectedLocation,
+  onSelectLocation,
+}) {
   const [zoom, setZoom] = useState(INITIAL_ZOOM);
 
   const selectedCityId = selectedLocation?.cityId ?? null;
 
   // Recreate marker icons only when weather data or the selection changes.
   const cityIcons = useMemo(
-    () => new Map(cities.map((city) => [city.id, createCityIcon(city, city.id === selectedCityId)])),
-    [cities, selectedCityId]
+    () =>
+      new Map(
+        cities.map((city) => [
+          city.id,
+          createCityIcon(city, city.id === selectedCityId),
+        ]),
+      ),
+    [cities, selectedCityId],
   );
 
-  const visibleCities = cities.filter((city) => zoom >= (city.minZoom ?? INITIAL_ZOOM));
+  const visibleCities = cities.filter(
+    (city) => zoom >= (city.minZoom ?? INITIAL_ZOOM),
+  );
 
   return (
     <MapContainer
@@ -105,8 +129,9 @@ export default function WeatherMap({ cities, selectedLocation, onSelectLocation 
       scrollWheelZoom
       className="h-full w-full"
     >
-        
-      {/* OpenStreetMap tiles (no API key). Muted via CSS in globals.css so markers stand out. */}
+      <ZoomControl position="bottomright" />
+      
+      {/* OpenStreetMap tiles (no API key). */}
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
