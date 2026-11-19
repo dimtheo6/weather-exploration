@@ -62,3 +62,29 @@ export function fetchCurrentWeatherBatch(locations) {
     return results.map((result) => toCurrentWeather(result.current));
   });
 }
+
+// Current weather for one place: a batch of one.
+export function fetchCurrentWeather(lat, lon) {
+  return fetchCurrentWeatherBatch([{ lat, lon }]).then((results) => results[0]);
+}
+
+const GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search";
+
+export function searchPlaces(query) {
+  const name = query.trim();
+  const params = new URLSearchParams({ name, count: 5, language: "en", format: "json" });
+
+  return cached(`search:${name.toLowerCase()}`, async () => {
+    const data = await getJson(`${GEOCODING_URL}?${params}`);
+    // When nothing matches, the API leaves out `results` entirely
+    return (data.results ?? []).map((place) => ({
+      id: place.id,
+      name: place.name,
+      region: place.admin1 ?? null,
+      country: place.country ?? null,
+      countryCode: place.country_code ?? null,
+      lat: place.latitude,
+      lon: place.longitude,
+    }));
+  });
+}

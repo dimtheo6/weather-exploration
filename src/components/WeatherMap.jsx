@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { MapContainer, Marker, TileLayer, Tooltip, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, TileLayer, Tooltip, useMap, useMapEvents, zoomControl } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -93,6 +93,7 @@ export default function WeatherMap({ cities, selectedLocation, onSelectLocation 
     <MapContainer
       center={INITIAL_CENTER}
       zoom={INITIAL_ZOOM}
+      zoomControl={false}
       minZoom={2}
       maxZoom={12}
       worldCopyJump
@@ -104,6 +105,7 @@ export default function WeatherMap({ cities, selectedLocation, onSelectLocation 
       scrollWheelZoom
       className="h-full w-full"
     >
+        
       {/* OpenStreetMap tiles (no API key). Muted via CSS in globals.css so markers stand out. */}
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
