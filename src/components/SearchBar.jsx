@@ -25,6 +25,13 @@ export default function SearchBar({ onSelect }) {
           setQuery(e.target.value);
           setIsOpen(true);
         }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && results.length > 0) handleSelect(results[0]);
+          if (e.key === "Escape") {
+            setQuery("");
+            setIsOpen(false);
+          }
+        }}
         placeholder="Search a city…"
         className="h-12 w-full bg-transparent px-4 outline-none"
       />
@@ -35,10 +42,14 @@ export default function SearchBar({ onSelect }) {
             <li className="px-4 py-2 text-sm text-neutral-500">Searching…</li>
           )}
           {status === "error" && (
-            <li className="px-4 py-2 text-sm text-red-600">Search failed. Try again.</li>
+            <li className="px-4 py-2 text-sm text-red-600">
+              Search failed. Try again.
+            </li>
           )}
           {status === "success" && results.length === 0 && (
-            <li className="px-4 py-2 text-sm text-neutral-500">No places found</li>
+            <li className="px-4 py-2 text-sm text-neutral-500">
+              No places found
+            </li>
           )}
           {results.map((place) => (
             <li key={place.id}>
