@@ -9,6 +9,7 @@ import { getWeatherInfo } from "@/lib/weatherCodes";
 import { useCurrentWeather } from "@/hooks/useCurrentWeather";
 import SearchBar from "./SearchBar";
 import LocateButton from "@/components/LocateButton";
+import { useFavorites } from "@/hooks/useFavorites";
 
 /**
  * Owns the app state (what's selected, preset weather) so that the map,
@@ -30,6 +31,8 @@ export default function WeatherExplorer() {
   const fetched = useCurrentWeather(selectedCity ? null : selectedLocation);
 
   const weather = selectedCity?.weather ?? fetched.data;
+
+  const { favorites, isFavorite, toggleFavorite } = useFavorites();
 
   return (
     <main className="relative h-dvh w-full">
@@ -72,18 +75,21 @@ export default function WeatherExplorer() {
           weather={weather}
           status={selectedCity ? "success" : fetched.status}
           onClose={() => setSelectedLocation(null)}
+          isFavorite={isFavorite(selectedLocation)}
+          onToggleFavorite={() => toggleFavorite(selectedLocation)}
         />
       )}
     </main>
   );
 }
 
-function SelectedLocationCard({ location, weather, status, onClose }) {
+function SelectedLocationCard({ location, weather, status, onClose, isFavorite, onToggleFavorite }) {
   const coords = `${location.lat.toFixed(2)}°, ${location.lon.toFixed(2)}°`;
   const info = weather
     ? getWeatherInfo(weather.weatherCode, weather.isDay)
     : null;
 
+  
   return (
     <>
       <section
@@ -99,6 +105,15 @@ function SelectedLocationCard({ location, weather, status, onClose }) {
               {location.country ? `${location.country} · ${coords}` : coords}
             </p>
           </div>
+          <button
+            onClick={onToggleFavorite}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
+            className="cursor-pointer ml-auto rounded-md px-2 text-xl leading-none text-amber-500 hover:bg-neutral-100"
+          >
+            {isFavorite ? "★" : "☆"}
+          </button>
           <button
             onClick={onClose}
             aria-label="Close"

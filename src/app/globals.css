@@ -41,7 +41,9 @@ body {
   border-radius: 999px;
   background: color-mix(in srgb, var(--marker-color) 18%, white);
   color: #111827;
-  font: 600 13px/1.3 var(--font-geist-sans), sans-serif;
+  font:
+    600 13px/1.3 var(--font-geist-sans),
+    sans-serif;
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
   cursor: pointer;
   transform: translate(-50%, -50%);
