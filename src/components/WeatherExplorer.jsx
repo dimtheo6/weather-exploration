@@ -10,6 +10,7 @@ import { useCurrentWeather } from "@/hooks/useCurrentWeather";
 import SearchBar from "./SearchBar";
 import LocateButton from "@/components/LocateButton";
 import { useFavorites } from "@/hooks/useFavorites";
+import Favorites from "./Favorites";
 
 /**
  * Owns the app state (what's selected, preset weather) so that the map,
@@ -43,12 +44,17 @@ export default function WeatherExplorer() {
       />
 
       {/* Search Bar */}
-      <div className="absolute top-4 left-4 right-4 z-1000 sm:right-auto sm:w-90">
+      <div className="absolute top-4 left-4 right-4 z-1000 sm:right-auto sm:w-90 space-y-2">
         <SearchBar onSelect={setSelectedLocation} />
+        <Favorites
+          favorites={favorites}
+          onSelect={setSelectedLocation}
+          className="absolute top-50 left-4 z-1000"
+        />
       </div>
 
       {/* Current Location */}
-      <div className="absolute right-3 bottom-24 z-1000">
+      <div className="absolute right-2 bottom-24 z-1000">
         <LocateButton onLocate={setSelectedLocation} />
       </div>
 
@@ -83,18 +89,25 @@ export default function WeatherExplorer() {
   );
 }
 
-function SelectedLocationCard({ location, weather, status, onClose, isFavorite, onToggleFavorite }) {
+function SelectedLocationCard({
+  location,
+  weather,
+  status,
+  onClose,
+  isFavorite,
+  onToggleFavorite,
+}) {
   const coords = `${location.lat.toFixed(2)}°, ${location.lon.toFixed(2)}°`;
   const info = weather
     ? getWeatherInfo(weather.weatherCode, weather.isDay)
     : null;
 
-  
   return (
     <>
       <section
         aria-label="Selected location"
-        className="absolute right-4 bottom-6 left-4 z-1000 rounded-xl bg-white p-4 text-neutral-900 shadow-lg sm:right-auto sm:w-80"
+        className="absolute right-16 bottom-6 left-4 z-1000 rounded-xl bg-white p-4 text-neutral-900 shadow-lg sm:right-auto sm:w-80"
+
       >
         <div className="flex items-start justify-between gap-2">
           <div>
