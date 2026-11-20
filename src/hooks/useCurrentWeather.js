@@ -13,17 +13,16 @@ export function useCurrentWeather(location) {
 
     fetchCurrentWeather(location.lat, location.lon)
       .then((data) => {
-        console.log("current weather for", key, data);
         if (!ignore) setResult({ key, data, error: null });
       })
       .catch((err) => {
-        console.error("weather fetch failed", key, err);
         if (!ignore) setResult({ key, data: null, error: err.message });
       });
+
     return () => {
       ignore = true;
     };
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- refetch only when the place (key) changes
   }, [key]);
 
   if (!key) return { status: "idle", data: null };

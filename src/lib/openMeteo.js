@@ -39,7 +39,6 @@ function toCurrentWeather(current) {
     weatherCode: current.weather_code,
     isDay: current.is_day === 1,
     windSpeed: current.wind_speed_10m,
-    time: current.time,
   };
 }
 
@@ -84,7 +83,6 @@ export function searchPlaces(query) {
       name: place.name,
       region: place.admin1 ?? null,
       country: place.country ?? null,
-      countryCode: place.country_code ?? null,
       lat: place.latitude,
       lon: place.longitude,
     }));
