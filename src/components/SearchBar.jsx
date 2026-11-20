@@ -10,10 +10,7 @@ export default function SearchBar({ onSelect }) {
 
   function handleSelect(place) {
     onSelect({
-      name: place.name,
-      country: place.country,
-      lat: place.lat,
-      lon: place.lon,
+      ...place,
       flyTo: true, // tells the map to fly there
     });
     setQuery(place.name);
