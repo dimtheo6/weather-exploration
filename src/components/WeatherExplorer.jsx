@@ -1,8 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-
-import MapLoader from "@/components/MapLoader";
 import { usePresetWeather } from "@/hooks/usePresetWeather";
 import { PRESET_CITIES } from "@/lib/presetCities";
 import { getWeatherInfo } from "@/lib/weatherCodes";
@@ -11,6 +9,7 @@ import SearchBar from "./SearchBar";
 import LocateButton from "@/components/LocateButton";
 import { useFavorites } from "@/hooks/useFavorites";
 import Favorites from "./Favorites";
+import WeatherMap from "./WeatherMap";
 
 /**
  * Owns the app state (what's selected, preset weather) so that the map,
@@ -47,7 +46,7 @@ export default function WeatherExplorer() {
 
   return (
     <main className="relative h-dvh w-full">
-      <MapLoader
+      <WeatherMap
         cities={mapCities}
         selectedLocation={selectedLocation}
         onSelectLocation={setSelectedLocation}
