@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import MapLoader from "@/components/MapLoader";
 import { usePresetWeather } from "@/hooks/usePresetWeather";
@@ -23,9 +23,21 @@ import Favorites from "./Favorites";
 export default function WeatherExplorer() {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const { status, cities, retry } = usePresetWeather(PRESET_CITIES);
+  const { favorites, isFavorite, toggleFavorite } = useFavorites();
+
+  // Favorites that aren't preset cities (presets already have a pill on the map)
+  const extraFavorites = useMemo(
+    () =>
+      favorites
+        .filter((fav) => !PRESET_CITIES.some((city) => city.id === fav.cityId))
+        .map((fav) => ({ ...fav, id: `fav-${fav.lat},${fav.lon}` })),
+    [favorites],
+  );
+  const favoriteWeather = usePresetWeather(extraFavorites); // ONE request for all of them
+  const mapCities = [...cities, ...favoriteWeather.cities];
 
   const selectedCity = selectedLocation?.cityId
-    ? cities.find((city) => city.id === selectedLocation.cityId)
+    ? mapCities.find((city) => city.id === selectedLocation.cityId)
     : null;
 
   // Pass null for preset cities → the hook does nothing
@@ -33,12 +45,10 @@ export default function WeatherExplorer() {
 
   const weather = selectedCity?.weather ?? fetched.data;
 
-  const { favorites, isFavorite, toggleFavorite } = useFavorites();
-
   return (
     <main className="relative h-dvh w-full">
       <MapLoader
-        cities={cities}
+        cities={mapCities}
         selectedLocation={selectedLocation}
         onSelectLocation={setSelectedLocation}
       />
@@ -107,7 +117,6 @@ function SelectedLocationCard({
       <section
         aria-label="Selected location"
         className="absolute right-16 bottom-6 left-4 z-1000 rounded-xl bg-white p-4 text-neutral-900 shadow-lg sm:right-auto sm:w-80"
-
       >
         <div className="flex items-start justify-between gap-2">
           <div>

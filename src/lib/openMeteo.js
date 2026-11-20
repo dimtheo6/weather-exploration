@@ -50,6 +50,8 @@ function toCurrentWeather(current) {
  * Results are returned in the same order as `locations`.
  */
 export function fetchCurrentWeatherBatch(locations) {
+  if (locations.length === 0) return Promise.resolve([]);
+
   const params = new URLSearchParams({
     latitude: locations.map((l) => roundCoord(l.lat)).join(","),
     longitude: locations.map((l) => roundCoord(l.lon)).join(","),
