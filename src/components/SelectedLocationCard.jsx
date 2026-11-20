@@ -21,7 +21,7 @@ export default function SelectedLocationCard({
       <div className="flex items-start justify-between gap-2">
         <div>
           <h2 className="text-lg font-semibold">
-            {location.name ?? "Selected point"}
+            {location.name ?? "Dropped Pin"}
           </h2>
           <p className="text-sm text-neutral-500">
             {location.country ? `${location.country} · ${coords}` : coords}
@@ -47,11 +47,11 @@ export default function SelectedLocationCard({
 
       {weather && (
         <div className="mt-3 flex items-center gap-3">
-          <span className="text-4xl" aria-hidden="true">
+          <span className="text-5xl" aria-hidden="true">
             {info.icon}
           </span>
           <div>
-            <p className="text-2xl font-semibold">
+            <p className="text-4xl font-semibold">
               {Math.round(weather.temperature)}°C
             </p>
             <p className="text-sm text-neutral-600">
