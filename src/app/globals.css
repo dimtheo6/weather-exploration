@@ -58,8 +58,3 @@ body {
   outline: 3px solid #111827;
   outline-offset: 1px;
 }
-
-.city-marker--loading {
-  padding: 2px 10px;
-  opacity: 0.6;
-}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   MapContainer,
   Marker,
@@ -18,42 +18,34 @@ import { getWeatherInfo, temperatureColor } from "@/lib/weatherCodes";
 const INITIAL_CENTER = [20, 0];
 const INITIAL_ZOOM = 2;
 
+// Stop panning past the poles, but allow scrolling sideways around the globe
+const WORLD_BOUNDS = [
+  [-85, -540],
+  [85, 540],
+];
+
 // Leaflet's default marker images break under bundlers, so we point to copies in /public.
 const pinIcon = new L.Icon({
   iconUrl: "/images/marker-icon.png",
   shadowUrl: "/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
   shadowSize: [41, 41],
 });
 
 // HTML "pill" marker: weather icon + temperature, coloured by temperature.
-// iconSize: null lets the pill size itself; CSS centres it on the point.
+// Shows "…" in grey while the weather is still loading. Styles are in globals.css.
 function createCityIcon(city, isSelected) {
-  const classes = ["city-marker", isSelected && "city-marker--selected"]
-    .filter(Boolean)
-    .join(" ");
-
-  if (!city.weather) {
-    return L.divIcon({
-      className: "",
-      iconSize: null,
-      html: `<div class="${classes} city-marker--loading">…</div>`,
-    });
-  }
-
-  const { temperature, weatherCode, isDay } = city.weather;
-  const { icon } = getWeatherInfo(weatherCode, isDay);
+  const { weather } = city;
+  const color = weather ? temperatureColor(weather.temperature) : "#9ca3af";
+  const text = weather
+    ? `${getWeatherInfo(weather.weatherCode, weather.isDay).icon} ${Math.round(weather.temperature)}°`
+    : "…";
 
   return L.divIcon({
     className: "",
-    iconSize: null,
-    html: `
-      <div class="${classes}" style="--marker-color: ${temperatureColor(temperature)}">
-        <span aria-hidden="true">${icon}</span>
-        <span>${Math.round(temperature)}°</span>
-      </div>`,
+    iconSize: null, // let the pill size itself; CSS centres it on the point
+    html: `<div class="city-marker ${isSelected ? "city-marker--selected" : ""}" style="--marker-color: ${color}">${text}</div>`,
   });
 }
 
@@ -97,18 +89,7 @@ export default function WeatherMap({
 
   const selectedCityId = selectedLocation?.cityId ?? null;
 
-  // Recreate marker icons only when weather data or the selection changes.
-  const cityIcons = useMemo(
-    () =>
-      new Map(
-        cities.map((city) => [
-          city.id,
-          createCityIcon(city, city.id === selectedCityId),
-        ]),
-      ),
-    [cities, selectedCityId],
-  );
-
+  // Crowded cities have a `minZoom`, so they only appear once you zoom in
   const visibleCities = cities.filter(
     (city) => zoom >= (city.minZoom ?? INITIAL_ZOOM),
   );
@@ -121,16 +102,12 @@ export default function WeatherMap({
       minZoom={2}
       maxZoom={12}
       worldCopyJump
-      maxBounds={[
-        [-85, -540],
-        [85, 540],
-      ]}
+      maxBounds={WORLD_BOUNDS}
       maxBoundsViscosity={1}
-      scrollWheelZoom
       className="h-full w-full"
     >
       <ZoomControl position="bottomright" />
-      
+
       {/* OpenStreetMap tiles (no API key). */}
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -152,8 +129,7 @@ export default function WeatherMap({
           <Marker
             key={city.id}
             position={[city.lat, city.lon]}
-            icon={cityIcons.get(city.id)}
-            title={label}
+            icon={createCityIcon(city, city.id === selectedCityId)}
             zIndexOffset={city.id === selectedCityId ? 1000 : 0}
             eventHandlers={{
               click: () =>
