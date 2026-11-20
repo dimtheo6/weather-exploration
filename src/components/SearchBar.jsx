@@ -32,7 +32,7 @@ export default function SearchBar({ onSelect }) {
             setIsOpen(false);
           }
         }}
-        placeholder="Search a city…"
+        placeholder="Search a city or click the map…"
         className="h-12 w-full bg-transparent px-4 outline-none"
       />
 
