@@ -91,7 +91,6 @@ All the main requirements are implemented. Known limitations:
 - **Selecting a saved map point** from the map or the favorites row draws a pin on top of its own weather pill.
 - **Briefly wrong pill values.** After removing a favorite, the other favorites' pills can show the wrong value until the new request finishes, which takes a fraction of a second.
 - **Search keyboard support is basic.** Enter selects the first result and Escape clears the input. There is no arrow-key navigation through the results.
-- **No automated tests.**
 
 ---
 
